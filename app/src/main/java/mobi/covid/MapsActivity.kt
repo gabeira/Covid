@@ -1,0 +1,94 @@
+package mobi.covid
+
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import mobi.covid.data.CovidRepository
+import mobi.covid.util.DateHelper
+import mobi.covid.util.ImageHelper
+
+
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_maps)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        mMap.setInfoWindowAdapter(object : InfoWindowAdapter {
+            override fun getInfoWindow(arg0: Marker): View? {
+                return null
+            }
+
+            override fun getInfoContents(arg0: Marker): View {
+                val v: View = layoutInflater.inflate(R.layout.info_window, null)
+                v.findViewById<TextView>(R.id.title).text = arg0.title
+                v.findViewById<TextView>(R.id.snippet).text = arg0.snippet
+                return v
+            }
+        })
+        loadCovidInfoMarkers()
+    }
+
+    private fun loadCovidInfoMarkers() {
+        CovidRepository().getCovidInfoList(applicationContext).forEach {
+            val infoText = "" + it.confirmed + " confirmed\n" +
+                    it.recovered + " recovered\n" +
+                    it.deaths + " deaths\n" +
+                    DateHelper().getLastDateFormatted(it.lastUpdate)
+            mMap.addMarker(
+                MarkerOptions().position(LatLng(it.latitude, it.longitude))
+                    .title(it.state + " " + it.country)
+                    .snippet(infoText)
+                    .icon(
+                        ImageHelper().getBitmapDescriptorFromVector(
+                            R.drawable.ic_covid_place,
+                            applicationContext
+                        )
+                    )
+            )
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        val id = item.itemId
+        if (id == R.id.action_refresh) {
+            loadCovidInfoMarkers()
+            return true
+        }
+        if (id == R.id.action_about) {
+            //TODO Implement About Screen
+//            startActivity(new Intent(this, AboutActivity.class));
+            Toast.makeText(applicationContext, "COVID19 App ", Toast.LENGTH_LONG).show()
+            return true;
+        }
+        return super.onOptionsItemSelected(item)
+    }
+}

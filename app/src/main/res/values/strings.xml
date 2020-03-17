@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">COVID19</string>
+    <string name="refresh">Refresh</string>
+    <string name="about">About</string>
+</resources>
