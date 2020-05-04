@@ -20,6 +20,6 @@ class DateHelper {
 
     companion object {
         private const val DAY_FORMAT = "MM-dd-yyyy"
-        private const val LONG_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+        private const val LONG_FORMAT = "yyyy-MM-dd HH:mm:ss"
     }
 }
