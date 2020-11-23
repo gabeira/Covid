@@ -53,13 +53,13 @@ class CovidRepository(private val ctx: Context, private val coroutineContext: Co
 
     private fun getLocalList(ctx: Context): List<Covid> {
         try {
-            val localDataFile = ctx.assets.open("05-03-2020.csv")
+            val localDataFile = ctx.assets.open("11-22-2020.csv")
             val reader = CSVReader(InputStreamReader(localDataFile))
             reader.drop(1).forEach {
                 addCovidInfoToList(it)
             }
         } catch (e: Exception) {
-            Log.e("Covid", e.localizedMessage ?: "Error loading local file 05-03-2020.csv")
+            Log.e("Covid", e.localizedMessage ?: "Error loading local file 11-22-2020.csv")
         }
         return covidInfoList
     }
